@@ -25,6 +25,6 @@
     "node-uuid": "^1.4.1"
   },
   "devDependencies": {
-    "connect3": "^3.0.1"
+    "connect": "^3.0.1"
   }
 }
