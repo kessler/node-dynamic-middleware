@@ -1,0 +1,30 @@
+{
+  "name": "connect-dynamic-middleware",
+  "version": "0.0.1",
+  "description": "turn a connect middleware into a live reloadable, deletable middleware",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kessler/connect-dynamic-middleware"
+  },
+  "keywords": [
+    "connect",
+    "express",
+    "middleware"
+  ],
+  "author": "Yaniv Kessler",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kessler/connect-dynamic-middleware/issues"
+  },
+  "homepage": "https://github.com/kessler/connect-dynamic-middleware",
+  "dependencies": {
+    "node-uuid": "^1.4.1"
+  },
+  "devDependencies": {
+    "connect3": "^3.0.1"
+  }
+}
