@@ -1,9 +1,11 @@
-# connect-dynamic-middleware
+# dynamic-middleware
+
+turn a connect middleware into a replaceable, deletable middleware
 
 ### usage
 ```
 var connect = require('connect')
-var DynamicMiddleware = require('connect-dynamic-middleware')
+var DynamicMiddleware = require('dynamic-middleware')
 
 var app = connect()
 
