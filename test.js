@@ -1,12 +1,14 @@
 var assert = require('assert')
 var DynamicMiddleware = require('./index.js')
 var connect = require('connect')
+var request = require('request')
+
 describe('DynamicMiddleware', function () {
 	var dm, rm, app
 
 	beforeEach(function () {
 		rm = function(req, res, next) {
-			res.end()
+			res.end('1')
 		}
 
 		app = new App()
@@ -38,9 +40,30 @@ describe('DynamicMiddleware', function () {
 	})
 
 	it('works with a real connect app', function(done) {
-		var app = connect()
+		var realApp = connect()
 
-		var dm = DynamicMiddleware(app, rm)
+		var realDm = DynamicMiddleware(realApp, function(req, res) {
+			res.end('1')
+		})
+
+		realApp.use('/gee', realDm)
+
+		realApp.listen(3000, function() {
+			request('http://localhost:3000/gee', function(err, res, body) {
+				if (err) return done(err)
+				assert.strictEqual(body, '1')				
+				
+				realDm.replace(function(req, res) {
+					res.end('2')
+				})
+
+				request('http://localhost:3000/gee', function(err, res, body) {
+					if (err) return done(err)
+					assert.strictEqual(body, '2')
+					done()
+				})
+			})
+		})
 
 	})
 })

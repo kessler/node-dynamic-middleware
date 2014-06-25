@@ -14,14 +14,14 @@ module.exports = function dynamicMiddlewareGenerator(app, middleware) {
 			}
 		}	
 
-		return -1
+		throw new Error('this middleware was already removed')
 	}
 
 	function dynamicMiddleware(req, res, next) {
 		middleware(req, res, next)
 	}
 
-	dynamicMiddleware[id] = undefined 
+	dynamicMiddleware[id] = undefined
 
 	dynamicMiddleware.use = function(route) {
 		
@@ -34,15 +34,14 @@ module.exports = function dynamicMiddlewareGenerator(app, middleware) {
 		
 		var i = find()
 
-		if (i > -1)
-			app.stack.splice(i, 1)
+		app.stack.splice(i, 1)
 	}
 
 	dynamicMiddleware.replace = function(_middleware) {
-		
+	
 		var i = find()
 
-		var newDm = app.stack[i].handle = dynamicMiddlewareGenerator(_middleware)
+		var newDm = app.stack[i].handle = dynamicMiddlewareGenerator(app, _middleware)
 
 		return newDm
 	}
