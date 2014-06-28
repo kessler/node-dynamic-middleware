@@ -1,6 +1,12 @@
 var uuid = require('node-uuid')
 
 module.exports = function dynamicMiddlewareGenerator(app, middleware) {
+	if (!app)
+		throw new Error('missing app')
+
+	if (!middleware)
+		throw new Error('missing middleware')
+	
 	var id = uuid()
 
 	function find() {
