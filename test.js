@@ -49,7 +49,7 @@ describe('DynamicMiddleware', function () {
 		realApp.use('/gee', realDm)
 
 		realApp.listen(3000, function() {
-			request('http://localhost:3000/gee', function(err, res, body) {
+			request('http://localhost:3000/gee', function(err, res, body) {				
 				if (err) return done(err)
 				assert.strictEqual(body, '1')				
 				
