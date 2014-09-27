@@ -2,6 +2,10 @@
 
 turn a connect middleware into a runtime replaceable, deletable middleware
 
+### Why?
+
+its quite inconvenient to replace a middleware after you start a connect / express server
+
 ### install
 ```
 	npm install dynamic-middleware
