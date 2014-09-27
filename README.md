@@ -1,6 +1,6 @@
 # dynamic-middleware [![Build Status](https://secure.travis-ci.org/kessler/node-dynamic-middleware.png?branch=master)](http://travis-ci.org/kessler/node-dynamic-middleware)
 
-turn a connect middleware into a replaceable, deletable middleware
+turn a connect middleware into a runtime replaceable, deletable middleware
 
 ### install
 ```
