@@ -2,6 +2,8 @@
 
 turn a connect middleware into a runtime replaceable, deletable middleware
 
+compatible with express 3, express 4 and connect 3
+
 ### Why?
 
 its quite inconvenient to replace a middleware after you start a connect / express server

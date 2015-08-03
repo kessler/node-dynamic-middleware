@@ -33,11 +33,11 @@ describe('DynamicMiddleware', function () {
 		assert.strictEqual(app.stack[0].handle, newDm)
 	})
 
-	worksWith('connect 3', connect3())
-	worksWith('express 3', express3())
-	worksWith('express 4', express4())
-
-	function worksWith(label, implementation) {
+	worksWith('connect 3', connect3(), function (app, handler) { app.use('/gee', handler) })
+	worksWith('express 3', express3(), function (app, handler) { app.use('/gee', handler) })
+	worksWith('express 4', express4(), function (app, handler) { app.use('/gee', handler) })
+	
+	function worksWith(label, implementation, bind) {
 		it('works with ' + label, function(done) {
 			var realApp = implementation
 
@@ -45,7 +45,7 @@ describe('DynamicMiddleware', function () {
 				res.end('1')
 			})
 
-			realApp.use('/gee', realDm)
+			bind(realApp, realDm)
 
 			var server = realApp.listen(3000, function() {
 				request('http://localhost:3000/gee', function(err, res, body) {				
