@@ -1,20 +1,14 @@
 var assert = require('assert')
 var DynamicMiddleware = require('./index.js')
-var connect = require('connect')
+var connect3 = require('connect')
+var express3 = require('express3')
+var express4 = require('express')
+
 var request = require('request')
+var express = require('express')
 
 describe('DynamicMiddleware', function () {
 	var dm, rm, app
-
-	beforeEach(function () {
-		rm = function(req, res, next) {
-			res.end('1')
-		}
-
-		app = new App()
-
-		dm = DynamicMiddleware(app, rm)
-	})
 
 	it('can be used', function () {
 		dm.use('/blah')
@@ -39,32 +33,48 @@ describe('DynamicMiddleware', function () {
 		assert.strictEqual(app.stack[0].handle, newDm)
 	})
 
-	it('works with a real connect app', function(done) {
-		var realApp = connect()
+	worksWith('connect 3', connect3())
+	worksWith('express 3', express3())
+	worksWith('express 4', express4())
 
-		var realDm = DynamicMiddleware(realApp, function(req, res) {
-			res.end('1')
-		})
+	function worksWith(label, implementation) {
+		it('works with ' + label, function(done) {
+			var realApp = implementation
 
-		realApp.use('/gee', realDm)
+			var realDm = DynamicMiddleware(realApp, function(req, res) {
+				res.end('1')
+			})
 
-		realApp.listen(3000, function() {
-			request('http://localhost:3000/gee', function(err, res, body) {				
-				if (err) return done(err)
-				assert.strictEqual(body, '1')				
-				
-				realDm.replace(function(req, res) {
-					res.end('2')
-				})
+			realApp.use('/gee', realDm)
 
-				request('http://localhost:3000/gee', function(err, res, body) {
+			var server = realApp.listen(3000, function() {
+				request('http://localhost:3000/gee', function(err, res, body) {				
 					if (err) return done(err)
-					assert.strictEqual(body, '2')
-					done()
+					assert.strictEqual(body, '1')				
+					
+					realDm.replace(function(req, res) {
+						res.end('2')
+					})
+
+					request('http://localhost:3000/gee', function(err, res, body) {
+						if (err) return done(err)
+						assert.strictEqual(body, '2')
+
+						server.close(done)
+					})
 				})
 			})
 		})
+	}
 
+	beforeEach(function () {
+		rm = function(req, res, next) {
+			res.end('1')
+		}
+
+		app = new App()
+
+		dm = DynamicMiddleware(app, rm)
 	})
 })
 
