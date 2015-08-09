@@ -10,11 +10,11 @@ its quite inconvenient to replace a middleware after you start a connect / expre
 
 ### install
 ```
-	npm install dynamic-middleware
+npm install dynamic-middleware
 ```
 
 ### usage
-```
+```javascript
 var connect = require('connect')
 var DynamicMiddleware = require('dynamic-middleware')
 
