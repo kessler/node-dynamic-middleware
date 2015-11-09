@@ -12,17 +12,15 @@ its quite inconvenient to replace a middleware after you start a connect / expre
 
 Previous versions operated by manipulating the internal state of express/connect , this approach worked well for real middlewares (.use()) but was terrible for routes (.get() etc..). The new version does not do that, but rather manages the state internally.
 
-### install
+### Install
 ```
     npm install dynamic-middleware
 ```
 
-### usage
-
-#### Single middleware
+### Usage
 ```javascript
-var express = require('express')
 var DynamicMiddleware = require('dynamic-middleware')
+var express = require('express')
 
 var app = express()
 
@@ -44,6 +42,6 @@ dm.enable()
 
 // or replace it with something else
 dm = dm.replace(function(req, res, next) {
-	res.end('2')
+    res.end('2')
 })
 ```
