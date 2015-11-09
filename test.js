@@ -1,4 +1,4 @@
-var assert = require('assert')
+var expect = require('chai').expect
 var DynamicMiddleware = require('./index.js')
 var connect3 = require('connect')
 var express3 = require('express3')
@@ -8,57 +8,79 @@ var request = require('request')
 var express = require('express')
 
 describe('DynamicMiddleware', function () {
-	var dm, rm, app
+	var dm, handler, m1, m2, app, mockResponse, engine
 
-	it('can be used', function () {
-		dm.use('/blah')
-		assert.strictEqual(app.stack[0].route, '/blah')
-	})
+	describe('supports a single middleware that', function () {
+		it('serves the right content', function () {
+			handler(null, mockResponse, null)
 
-	it('can be removed', function () {
-		dm.use('/blah')
-		assert.strictEqual(app.stack[0].route, '/blah')
-		dm.remove()
-		assert.strictEqual(app.stack.length, 0)
-	})
-
-	it('can be replaced', function () {
-		dm.use('/blah')
-		assert.strictEqual(app.stack[0].route, '/blah')
-		var replace = function(rq,rs,next) {}
+			expect(mockResponse.invocations[0]).to.equal('1')
+		})
 		
-		var newDm = dm.replace(replace)
-		
-		assert.strictEqual(app.stack.length, 1)
-		assert.strictEqual(app.stack[0].handle, newDm)
-	})
+		it('can be disabled', function () {
+			dm.disable()
 
+			handler(null, mockResponse, null)
+
+			expect(mockResponse.statusCode).to.equal(404)
+		})
+
+		it('can be enabled', function () {
+			dm.disable()
+
+			handler(null, mockResponse, null)
+
+			dm.enable()
+
+			handler(null, mockResponse, null)
+
+			expect(mockResponse.statusCode).to.equal(200)
+		})
+
+		it('can be replaced', function () {
+			dm.replace(function (req, res, next) {
+				res.end('2')
+			})
+
+			handler(null, mockResponse, null)
+
+			expect(mockResponse.invocations[0]).to.equal('2')
+		})
+
+		beforeEach(function () {
+			dm = DynamicMiddleware(m1)
+
+			handler = dm.handler()
+		})
+	})
+	
 	worksWith('connect 3', connect3(), function (app, handler) { app.use('/gee', handler) })
 	worksWith('express 3', express3(), function (app, handler) { app.use('/gee', handler) })
+	worksWith('express 3 get', express3(), function (app, handler) { app.get('/gee', handler) })
 	worksWith('express 4', express4(), function (app, handler) { app.use('/gee', handler) })
+	worksWith('express 4 get', express4(), function (app, handler) { app.get('/gee', handler) })
 	
 	function worksWith(label, implementation, bind) {
 		it('works with ' + label, function(done) {
-			var realApp = implementation
 
-			var realDm = DynamicMiddleware(realApp, function(req, res) {
+			var dynamicMiddleware = DynamicMiddleware(function(req, res) {
 				res.end('1')
 			})
 
-			bind(realApp, realDm)
+			bind(implementation, dynamicMiddleware.handler())
 
-			var server = realApp.listen(3000, function() {
+			var server = implementation.listen(3000, function() {
 				request('http://localhost:3000/gee', function(err, res, body) {				
 					if (err) return done(err)
-					assert.strictEqual(body, '1')				
+					expect(body).to.equal('1')
 					
-					realDm.replace(function(req, res) {
+					dynamicMiddleware.replace(function(req, res) {
 						res.end('2')
 					})
 
 					request('http://localhost:3000/gee', function(err, res, body) {
 						if (err) return done(err)
-						assert.strictEqual(body, '2')
+						expect(body).to.equal('2')
 
 						server.close(done)
 					})
@@ -68,13 +90,13 @@ describe('DynamicMiddleware', function () {
 	}
 
 	beforeEach(function () {
-		rm = function(req, res, next) {
+		m1 = function(req, res, next) {
 			res.end('1')
 		}
 
 		app = new App()
 
-		dm = DynamicMiddleware(app, rm)
+		mockResponse = new Response()
 	})
 })
 
@@ -85,3 +107,12 @@ function App() {
 App.prototype.use = function(route, fn) {
 	this.stack.push({ route: route, handle: fn })
 };
+
+function Response() {
+	this.invocations = []
+	this.statusCode = undefined
+}
+
+Response.prototype.end = function(v) {
+	this.invocations.push(v)
+}

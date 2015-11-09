@@ -1,69 +1,64 @@
-var uuid = require('node-uuid')
-var isArray = require('util').isArray
+var _ = require('lodash')
+var debug = require('debug')('dynamic-middleware')
 
-module.exports = function dynamicMiddlewareGenerator(app, middleware) {
-	if (!app)
-		throw new Error('missing app')
+module.exports = DynamicMiddleware
 
-	if (!middleware)
-		throw new Error('missing middleware')
-	
-	var id = uuid()
+function DynamicMiddleware(middleware) {
+	if (!(this instanceof DynamicMiddleware)) return new DynamicMiddleware(middleware)
+	this._init(middleware)
+}
 
-	function find() {
-		
-		var stack = getStack()
+/**
+ *	create a handler that can be used by express/connect
+ *
+ *	@returns {Function} a connect/express middleware
+ */
+DynamicMiddleware.prototype.handler = function() {
+	var self = this
 
-		for (var i = stack.length - 1; i >= 0; i--) {						
-			
-			if (id in stack[i].handle) {					
-				return i
-			}
-		}	
-
-		throw new Error('this middleware was already removed')
-	}
-
-	function getStack() {
-		if (isArray(app.stack)) {
-			return app.stack
+	return function handle(req, res, next) {
+		if (self._disabled) {
+			res.statusCode = 404
+			return res.end()
 		}
 
-		if (app._router && isArray(app._router.stack)) {
-			return app._router.stack
-		}
+		res.statusCode = 200
 
-		throw new Error('cannot find http stack, must be an incompatible version')
+		self._middleware(req, res, next)
+	}
+}
+
+/**
+ *	disable this middleware, once disable it will respond to requests with 404 status code
+ *
+ */
+DynamicMiddleware.prototype.disable = function() {
+	this._disabled = true
+}
+
+/**
+ *	enable this middleware
+ *
+ */
+DynamicMiddleware.prototype.enable = function() {
+	this._disabled = false
+}
+
+/**
+ *	replace the underlying middleware with something else
+ *
+ */
+DynamicMiddleware.prototype.replace = function(middleware) {
+	this._init(middleware)
+}
+
+DynamicMiddleware.prototype._init = function(middleware) {
+	debug('initializing')
+
+	// non empty constructor with a single middleware without weights
+	if (typeof(middleware) !== 'function') {
+		throw new Error('invalid middleware argument, must be a function or an array of functions or an array of loadbalance weighted entries')
 	}
 
-	function dynamicMiddleware(req, res, next) {
-		middleware(req, res, next)
-	}
-
-	dynamicMiddleware[id] = undefined
-
-	dynamicMiddleware.use = function(route) {
-		
-		route = route || '/'
-
-		app.use(route, this)
-	}
-
-	dynamicMiddleware.remove = function() {
-		
-		var i = find()
-
-		getStack().splice(i, 1)
-	}
-
-	dynamicMiddleware.replace = function(_middleware) {
-	
-		var i = find()
-		var stack = getStack()
-		var newDm = stack[i].handle = dynamicMiddlewareGenerator(app, _middleware)
-
-		return newDm
-	}
-
-	return dynamicMiddleware
+	this._middleware = middleware
 }

@@ -1,6 +1,6 @@
 # dynamic-middleware [![Build Status](https://secure.travis-ci.org/kessler/node-dynamic-middleware.png?branch=master)](http://travis-ci.org/kessler/node-dynamic-middleware)
 
-turn a connect middleware into a runtime replaceable, deletable middleware
+Replace or disable a connect/express middleware in runtime
 
 compatible with express 3, express 4 and connect 3
 
@@ -8,38 +8,42 @@ compatible with express 3, express 4 and connect 3
 
 its quite inconvenient to replace a middleware after you start a connect / express server
 
+### Major changes in 3.x.x
+
+Previous versions operated by manipulating the internal state of express/connect , this approach worked well for real middlewares (.use()) but was terrible for routes (.get() etc..). The new version does not do that, but rather manages the state internally.
+
 ### install
 ```
-	npm install dynamic-middleware
+    npm install dynamic-middleware
 ```
 
 ### usage
-```
-var connect = require('connect')
+
+#### Single middleware
+```javascript
+var express = require('express')
 var DynamicMiddleware = require('dynamic-middleware')
 
-var app = connect()
+var app = express()
 
 // a simple middleware
 function myMiddleware(req, res, next) {
-	res.end('1')
+    res.end('1')
 }
 
 // create a dynamic one from it
-var dm = DynamicMiddleware(app, myMiddleware)
+var dm = DynamicMiddleware(myMiddleware)
 
-dm.use('/')
+app.get('/', dm.handler()) 
 
-// same as:
+// disable the middleware, will reply with 404 now
+dm.disable() 
 
-app.use('/', dm) 
-
-// remove the middleware
-dm.remove() 
+// enable it back
+dm.enable()
 
 // or replace it with something else
 dm = dm.replace(function(req, res, next) {
 	res.end('2')
 })
-
 ```
