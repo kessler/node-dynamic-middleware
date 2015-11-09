@@ -45,3 +45,11 @@ dm = dm.replace(function(req, res, next) {
     res.end('2')
 })
 ```
+
+## see also
+[loadbalance module](https://github.com/kessler/node-loadbalance)
+[loadbalance-middleware module](https://github.com/kessler/node-loadbalance-middleware)
+
+## license
+
+[MIT](http://opensource.org/licenses/MIT) © [yaniv kessler](yanivkessler.com)
