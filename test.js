@@ -10,14 +10,14 @@ var express = require('express')
 describe('DynamicMiddleware', function () {
 	var dm, handler, m1, m2, app, mockResponse, engine
 
-	describe('supports a single middleware that', function () {
-		it('serves the right content', function () {
+	describe('wraps a normal middleware function and', function () {
+		it('forward all requests to it', function () {
 			handler(null, mockResponse, null)
 
 			expect(mockResponse.invocations[0]).to.equal('1')
 		})
 		
-		it('can be disabled', function () {
+		it('allow it to be disabled during runtime', function () {
 			dm.disable()
 
 			handler(null, mockResponse, null)
@@ -25,7 +25,7 @@ describe('DynamicMiddleware', function () {
 			expect(mockResponse.statusCode).to.equal(404)
 		})
 
-		it('can be enabled', function () {
+		it('allow it to be enabled during runtime', function () {
 			dm.disable()
 
 			handler(null, mockResponse, null)
@@ -37,7 +37,7 @@ describe('DynamicMiddleware', function () {
 			expect(mockResponse.statusCode).to.equal(200)
 		})
 
-		it('can be replaced', function () {
+		it('allow it to be replaced during runtime', function () {
 			dm.replace(function (req, res, next) {
 				res.end('2')
 			})
