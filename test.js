@@ -1,14 +1,16 @@
-var expect = require('chai').expect
-var DynamicMiddleware = require('./index.js')
-var connect3 = require('connect')
-var express3 = require('express3')
-var express4 = require('express')
+'use strict'
 
-var request = require('request')
-var express = require('express')
+const expect = require('chai').expect
+const DynamicMiddleware = require('./index.js')
+const connect3 = require('connect')
+const express3 = require('express3')
+const express4 = require('express')
+
+const request = require('request')
+const express = require('express')
 
 describe('DynamicMiddleware', function () {
-	var dm, handler, m1, m2, app, mockResponse, engine
+	let dm, handler, m1, m2, app, mockResponse, engine
 
 	describe('wraps a normal middleware function and', function () {
 		it('forward all requests to it', function () {
@@ -54,6 +56,17 @@ describe('DynamicMiddleware', function () {
 
 			handler = dm.handler()
 		})
+	})
+
+	it('wraps an error middleware', (done) => {
+		let error = {}
+		let errorDm = DynamicMiddleware.create((err, req, res) => {
+			expect(error).to.equal(error)
+			done()
+		})
+
+		let errorHandler = errorDm.errorHandler()
+		errorHandler(error)
 	})
 	
 	worksWith('connect 3', connect3(), function (app, handler) { app.use('/gee', handler) })
