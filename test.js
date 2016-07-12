@@ -48,7 +48,7 @@ describe('DynamicMiddleware', function () {
 		})
 
 		beforeEach(function () {
-			dm = DynamicMiddleware(m1)
+			dm = DynamicMiddleware.create(m1)
 
 			handler = dm.handler()
 		})
@@ -63,7 +63,7 @@ describe('DynamicMiddleware', function () {
 	function worksWith(label, implementation, bind) {
 		it('works with ' + label, function(done) {
 
-			var dynamicMiddleware = DynamicMiddleware(function(req, res) {
+			var dynamicMiddleware = DynamicMiddleware.create(function(req, res) {
 				res.end('1')
 			})
 
