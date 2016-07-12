@@ -22,9 +22,18 @@ class DynamicMiddleware {
 				return res.end()
 			}
 
-			res.statusCode = 200
-
 			this._middleware(req, res, next)
+		}
+	}
+
+	errorHandler() {
+		return (err, req, res, next) => {
+			if (this._disabled) {
+				res.statusCode = 404
+				return res.end()
+			}
+
+			this._middleware(err, req, res, next)	
 		}
 	}
 

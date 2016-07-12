@@ -30,6 +30,8 @@ describe('DynamicMiddleware', function () {
 
 			handler(null, mockResponse, null)
 
+			expect(mockResponse.statusCode).to.equal(404)
+
 			dm.enable()
 
 			handler(null, mockResponse, null)
@@ -64,6 +66,7 @@ describe('DynamicMiddleware', function () {
 		it('works with ' + label, function(done) {
 
 			var dynamicMiddleware = DynamicMiddleware.create(function(req, res) {
+				res.statusCode = 200
 				res.end('1')
 			})
 
@@ -91,6 +94,7 @@ describe('DynamicMiddleware', function () {
 
 	beforeEach(function () {
 		m1 = function(req, res, next) {
+			res.statusCode = 200
 			res.end('1')
 		}
 
