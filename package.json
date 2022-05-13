@@ -4,7 +4,7 @@
   "description": "turn a connect middleware into a replaceable, deletable middleware",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -R spec"
+    "test": "npx mocha"
   },
   "repository": {
     "type": "git",
@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/kessler/node-dynamic-middleware",
   "dependencies": {
-    "debug": "^2.6.9",
     "lodash": "^4.17.19"
   },
   "devDependencies": {
