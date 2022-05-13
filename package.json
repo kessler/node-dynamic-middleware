@@ -21,15 +21,10 @@
     "url": "https://github.com/kessler/node-dynamic-middleware/issues"
   },
   "homepage": "https://github.com/kessler/node-dynamic-middleware",
-  "dependencies": {
-    "lodash": "^4.17.19"
-  },
   "devDependencies": {
+    "axios": "^0.27.2",
     "chai": "^3.4.1",
-    "connect": "^3.7.0",
-    "express": "^4.17.1",
-    "express3": "0.0.0",
-    "mocha": "^8.1.1",
-    "request": "^2.88.2"
+    "express": "^4.18.1",
+    "mocha": "^8.1.1"
   }
 }

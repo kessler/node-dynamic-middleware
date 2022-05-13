@@ -1,6 +1,5 @@
 'use strict'
 
-const _ = require('lodash')
 const debug = require('debug')('dynamic-middleware')
 
 class DynamicMiddleware {
